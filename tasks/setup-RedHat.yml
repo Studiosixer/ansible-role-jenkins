@@ -31,13 +31,21 @@
     state: installed
   when: specific_version.stat.exists
   notify: configure default users
+  register: jenkins_installed
 
 - name: Validate Jenkins is installed and register package name.
   yum:
     name: jenkins
     state: present
   when: not specific_version.stat.exists
+  register: jenkins_installed
+
+- name: Ensure configure default users is triggered if needed
+  debug: msg="no message"
+  when: jenkins_installed.changed
+  changed_when: True
   notify: configure default users
+
 
 - name: Install Jenkins from repository.
   yum:
